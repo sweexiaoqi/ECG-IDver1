@@ -57,104 +57,38 @@
         </section>
 
         <!-- SCREEN 2: USER LOGIN -->
-        <section id="screen-login" class="screen dashboard-screen">
-            <div class="dashboard-container">
-                <div class="dashboard-header-bar">
-                    <div class="header-title-group">
-                        <span class="admin-badge">PORTAL ENTRY</span>
-                        <h1>User Verification & Continual Learning</h1>
-                    </div>
-                    <div class="header-controls">
-                        <button class="btn btn-secondary logout-btn" onclick="showScreen('screen-main')">
-                            <span class="material-symbols-rounded">arrow_back</span>
-                            Back to Menu
-                        </button>
+        <section id="screen-login" class="screen">
+            <div class="card flow-card">
+                <div class="card-header">
+                    <span class="material-symbols-rounded header-icon">upload_file</span>
+                    <h2>Upload ECG Recording</h2>
+                    <p class="header-desc">Upload your lead I ECG recording to verify your identity</p>
+                </div>
+                
+                <div class="upload-zone" id="login-upload-zone">
+                    <input type="file" id="login-file-input" class="file-input" multiple>
+                    <span class="material-symbols-rounded upload-zone-icon">cloud_upload</span>
+                    <p class="upload-text">Drag & drop ECG recordings — supports .atr, .dat, .hea formats</p>
+                    <button class="btn btn-secondary" onclick="document.getElementById('login-file-input').click()">Browse Files</button>
+                    <div class="selected-files-list" id="login-files-list"></div>
+                </div>
+
+                <!-- Sample Downloader Widget -->
+                <div class="samples-widget">
+                    <h3>Available Test Records</h3>
+                    <p class="widget-desc">Download a sample to test authentication:</p>
+                    <div class="samples-buttons" id="login-samples-list">
+                        <!-- Populated dynamically -->
+                        <span class="loading-label">Loading samples...</span>
                     </div>
                 </div>
 
-                <div class="dashboard-grid">
-                    <!-- Column 1: Upload Card -->
-                    <div class="card" style="padding: 30px;">
-                        <div class="card-header">
-                            <span class="material-symbols-rounded header-icon">upload_file</span>
-                            <h2>Upload ECG Recording</h2>
-                            <p class="header-desc">Upload your lead I ECG recording to verify your identity</p>
-                        </div>
-                        
-                        <div class="upload-zone" id="login-upload-zone">
-                            <input type="file" id="login-file-input" class="file-input" multiple>
-                            <span class="material-symbols-rounded upload-zone-icon">cloud_upload</span>
-                            <p class="upload-text">Drag & drop ECG recordings — supports .atr, .dat, .hea formats</p>
-                            <button class="btn btn-secondary" onclick="document.getElementById('login-file-input').click()">Browse Files</button>
-                            <div class="selected-files-list" id="login-files-list"></div>
-                        </div>
-
-                        <!-- Sample Downloader Widget -->
-                        <div class="samples-widget">
-                            <h3>Available Test Records</h3>
-                            <p class="widget-desc">Download a sample to test authentication:</p>
-                            <div class="samples-buttons" id="login-samples-list">
-                                <!-- Populated dynamically -->
-                                <span class="loading-label">Loading samples...</span>
-                            </div>
-                        </div>
-
-                        <div class="card-actions">
-                            <button class="btn btn-primary btn-block btn-success-bg" id="btn-authenticate">
-                                <span class="material-symbols-rounded">verified_user</span>
-                                VERIFY ECG & AUTHENTICATE
-                            </button>
-                            <button class="btn btn-text btn-block" onclick="showScreen('screen-main')">Cancel</button>
-                        </div>
-                    </div>
-
-                    <!-- Column 2: Dashboard Analytics -->
-                    <div class="dashboard-card chart-card">
-                        <div class="card-title-bar">
-                            <h3>TCN-OCL Performance</h3>
-                            <div class="accuracy-badge-container">
-                                <span class="badge-label">TCN Accuracy</span>
-                                <span class="badge-value" id="user-dashboard-accuracy-badge">86.4%</span>
-                            </div>
-                        </div>
-                        <div class="chart-wrapper" style="height: 200px;">
-                            <canvas id="userPerformanceChart"></canvas>
-                        </div>
-                        <div class="chart-footer" style="padding-top: 12px; gap: 8px;">
-                            <div class="stats-row">
-                                <div class="stat-item" style="padding: 6px;">
-                                    <span class="stat-num" id="user-stat-replay-buffer" style="font-size: 16px;">0</span>
-                                    <span class="stat-label" style="font-size: 10px;">Replay Buffer Size</span>
-                                </div>
-                                <div class="stat-item" style="padding: 6px;">
-                                    <span class="stat-num" id="user-stat-enrolled-users" style="font-size: 16px;">0</span>
-                                    <span class="stat-label" style="font-size: 10px;">Enrolled Profiles</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="divider" style="margin: 16px 0;"></div>
-                        
-                        <h3>Live Verification Logs</h3>
-                        <div class="table-wrapper" style="max-height: 160px; margin-top: 8px;">
-                            <table class="logs-table">
-                                <thead>
-                                    <tr>
-                                        <th>Status Badge</th>
-                                        <th>Username</th>
-                                        <th>Timestamp</th>
-                                        <th>Accuracy</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="user-logs-table-body">
-                                    <!-- Populated dynamically -->
-                                    <tr>
-                                        <td colspan="4" class="empty-table-cell">No log entries found.</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                <div class="card-actions">
+                    <button class="btn btn-primary btn-block btn-success-bg" id="btn-authenticate">
+                        <span class="material-symbols-rounded">verified_user</span>
+                        VERIFY ECG & AUTHENTICATE
+                    </button>
+                    <button class="btn btn-text btn-block" onclick="showScreen('screen-main')">Cancel</button>
                 </div>
             </div>
         </section>

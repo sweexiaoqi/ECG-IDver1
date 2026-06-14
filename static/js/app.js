@@ -34,8 +34,8 @@ function showScreen(screenId) {
         }, 150);
     }
 
-    // Stop dashboard polling if leaving dashboard screens
-    if (screenId !== 'screen-dev-dashboard' && screenId !== 'screen-login' && dashboardInterval) {
+    // Stop dashboard polling if leaving dev portal
+    if (screenId !== 'screen-dev-dashboard' && dashboardInterval) {
         clearInterval(dashboardInterval);
         dashboardInterval = null;
     }
@@ -58,7 +58,6 @@ function showScreen(screenId) {
     } else if (screenId === 'screen-login') {
         clearUploadZone('login');
         loadSamplesList('login');
-        initUserDashboard();
     } else if (screenId === 'screen-register') {
         clearUploadZone('register');
         loadSamplesList('register');
@@ -342,9 +341,6 @@ document.getElementById('btn-authenticate').addEventListener('click', async () =
             
             showScreen('screen-auth-denied');
         }
-        
-        // Refresh User Dashboard in the background immediately
-        refreshUserDashboardData();
         
     } catch (error) {
         showToast(error.message, 'error');
@@ -742,134 +738,7 @@ document.getElementById('btn-flash-logs').addEventListener('click', async () => 
         lastAttemptedUsername = '';
         
         refreshDashboardData();
-        refreshUserDashboardData(); // Also refresh public dashboard
     } catch (error) {
         showToast(error.message, 'error');
     }
 });
-
-// -------------------------------------------------------------
-// USER DASHBOARD LOGIC (PUBLIC ACCESSIBLE)
-// -------------------------------------------------------------
-let userPerformanceChart = null;
-
-function initUserDashboard() {
-    refreshUserDashboardData();
-    if (dashboardInterval) clearInterval(dashboardInterval);
-    dashboardInterval = setInterval(refreshUserDashboardData, 30000);
-}
-
-async function refreshUserDashboardData() {
-    try {
-        // 1. Fetch Metrics (no auth header needed!)
-        const response = await fetch(`${BACKEND_URL}/api/metrics/performance`);
-        const metrics = await response.json();
-        
-        const badgeEl = document.getElementById('user-dashboard-accuracy-badge');
-        if (badgeEl) badgeEl.textContent = metrics.current_accuracy;
-        
-        const bufferEl = document.getElementById('user-stat-replay-buffer');
-        if (bufferEl) bufferEl.textContent = metrics.replay_buffer_size;
-        
-        const usersEl = document.getElementById('user-stat-enrolled-users');
-        if (usersEl) usersEl.textContent = metrics.enrolled_users;
-        
-        plotUserChart(metrics.time_series);
-        
-        // 2. Fetch Logs
-        const logsRes = await fetch(`${BACKEND_URL}/api/logs?status=All`);
-        const logs = await logsRes.json();
-        renderUserLogsTable(logs);
-    } catch (e) {
-        console.error('Error fetching user dashboard metrics:', e);
-    }
-}
-
-function renderUserLogsTable(logs) {
-    const tbody = document.getElementById('user-logs-table-body');
-    if (!tbody) return;
-    
-    // Filter to only authentication and failed attempts to show live login attempts
-    const verifyLogs = logs.filter(log => log.event_type === 'AUTHENTICATION' || log.event_type === 'FAILED_ATTEMPT').slice(0, 5);
-    
-    if (verifyLogs.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="4" class="empty-table-cell">No verification attempts logged yet.</td></tr>`;
-        return;
-    }
-    
-    tbody.innerHTML = '';
-    verifyLogs.forEach(log => {
-        const tr = document.createElement('tr');
-        
-        let statusBadge = '';
-        if (log.status === 'AUTH_APPROVED') {
-            statusBadge = `<span class="status-badge badge-approved">AUTH APPROVED</span>`;
-        } else if (log.status === 'FAILED') {
-            statusBadge = `<span class="status-badge badge-failed">FAILED ATTEMPT</span>`;
-        } else {
-            statusBadge = `<span class="status-badge badge-error">ERROR</span>`;
-        }
-        
-        const date = new Date(log.created_at);
-        const timeStr = date.toLocaleTimeString();
-        const accStr = log.accuracy !== null ? `${(log.accuracy * 100).toFixed(2)}%` : 'N/A';
-        
-        tr.innerHTML = `
-            <td>${statusBadge}</td>
-            <td><code>${log.username}</code></td>
-            <td>${timeStr}</td>
-            <td><strong>${accStr}</strong></td>
-        `;
-        tbody.appendChild(tr);
-    });
-}
-
-function plotUserChart(timeSeriesData) {
-    const ctx = document.getElementById('userPerformanceChart');
-    if (!ctx) return;
-    
-    const labels = timeSeriesData.map(d => d.time);
-    const data = timeSeriesData.map(d => d.accuracy);
-    
-    if (userPerformanceChart) {
-        userPerformanceChart.data.labels = labels;
-        userPerformanceChart.data.datasets[0].data = data;
-        userPerformanceChart.update();
-        return;
-    }
-    
-    userPerformanceChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: 'TCN-OCL Accuracy',
-                data: data,
-                borderColor: '#6C47FF',
-                backgroundColor: 'rgba(108, 71, 255, 0.05)',
-                borderWidth: 2,
-                tension: 0.3,
-                fill: true,
-                pointBackgroundColor: '#6C47FF',
-                pointHoverRadius: 4
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: {
-                y: {
-                    min: 80,
-                    max: 100,
-                    grid: { color: 'rgba(226, 226, 236, 0.3)' },
-                    ticks: { callback: v => v + '%', color: '#65647C', font: { size: 9 } }
-                },
-                x: {
-                    grid: { display: false },
-                    ticks: { color: '#65647C', font: { size: 8 } }
-                }
-            }
-        }
-    });
-}
