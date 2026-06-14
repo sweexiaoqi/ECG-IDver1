@@ -1,6 +1,7 @@
 import shutil
 import time
 import hashlib
+import numpy as np
 from typing import List, Optional
 from pathlib import Path
 from fastapi import FastAPI, Depends, UploadFile, File, Form, HTTPException, Header, Response, Cookie
