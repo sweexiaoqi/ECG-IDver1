@@ -1,0 +1,23 @@
+# Python caches
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+
+# Databases
+*.db
+*.sqlite
+
+# Large weights and checkpoints
+*.pt
+*.pth
+
+# Temporary uploads and downloads
+uploads/*
+!uploads/.gitkeep
+
+# Environment variables
+.env
+venv/
+env/
