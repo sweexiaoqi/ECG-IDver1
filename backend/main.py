@@ -266,8 +266,8 @@ async def dev_login(password: str = Form(...), response: Response = None):
 
 
 @app.get("/api/logs")
-def get_logs(status: Optional[str] = None, db: Session = Depends(get_db), dev = Depends(get_current_dev)):
-    """Fetch all auth log records (developer only). Can filter by status."""
+def get_logs(status: Optional[str] = None, db: Session = Depends(get_db)):
+    """Fetch all auth log records. Can filter by status."""
     query = db.query(AuthLog)
     
     if status and status != "All":
@@ -327,7 +327,7 @@ def dev_calibrate(db: Session = Depends(get_db), dev = Depends(get_current_dev))
 
 
 @app.get("/api/metrics/performance")
-def get_performance_metrics(db: Session = Depends(get_db), dev = Depends(get_current_dev)):
+def get_performance_metrics(db: Session = Depends(get_db)):
     """Returns TCN-OCL performance metrics, training loss, and replay buffer size for the chart."""
     # Count variables
     replay_count = db.query(ReplaySample).count()
