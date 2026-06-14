@@ -1,3 +1,7 @@
+// Set this to your deployed Render backend URL when deploying the frontend separately to Netlify.
+// Example: const BACKEND_URL = "https://ecg-id-backend.onrender.com";
+const BACKEND_URL = "";
+
 // State Management
 let currentScreen = 'screen-main';
 let loginFiles = [];
@@ -209,7 +213,7 @@ async function loadSamplesList(type) {
     if (!container) return;
     
     try {
-        const response = await fetch('/api/samples/list');
+        const response = await fetch(`${BACKEND_URL}/api/samples/list`);
         const files = await response.json();
         
         if (files.length === 0) {
@@ -252,7 +256,7 @@ async function downloadSamplePair(baseName) {
         
         for (const filename of filesToDownload) {
             const link = document.createElement('a');
-            link.href = `/api/samples/download/${filename}`;
+            link.href = `${BACKEND_URL}/api/samples/download/${filename}`;
             link.download = filename;
             document.body.appendChild(link);
             link.click();
@@ -291,7 +295,7 @@ document.getElementById('btn-authenticate').addEventListener('click', async () =
     });
     
     try {
-        const response = await fetch('/api/auth/verify', {
+        const response = await fetch(`${BACKEND_URL}/api/auth/verify`, {
             method: 'POST',
             body: formData
         });
@@ -372,7 +376,7 @@ document.getElementById('btn-register').addEventListener('click', async () => {
     });
     
     try {
-        const response = await fetch('/api/users/register', {
+        const response = await fetch(`${BACKEND_URL}/api/users/register`, {
             method: 'POST',
             body: formData
         });
@@ -412,7 +416,7 @@ async function autoRegisterUser(username) {
     });
     
     try {
-        const response = await fetch('/api/users/register', {
+        const response = await fetch(`${BACKEND_URL}/api/users/register`, {
             method: 'POST',
             body: formData
         });
@@ -450,7 +454,7 @@ document.getElementById('btn-dev-login').addEventListener('click', async () => {
         const formData = new FormData();
         formData.append('password', password);
         
-        const response = await fetch('/api/dev/login', {
+        const response = await fetch(`${BACKEND_URL}/api/dev/login`, {
             method: 'POST',
             body: formData
         });
@@ -506,7 +510,7 @@ async function refreshDashboardData() {
     
     try {
         // 1. Fetch Metrics
-        const metricsRes = await fetch('/api/metrics/performance', {
+        const metricsRes = await fetch(`${BACKEND_URL}/api/metrics/performance`, {
             headers: { 'Authorization': `Bearer ${devToken}` }
         });
         
@@ -526,7 +530,7 @@ async function refreshDashboardData() {
         plotChart(metrics.time_series);
         
         // 2. Fetch Logs
-        const logsRes = await fetch(`/api/logs?status=${activeFilter}`, {
+        const logsRes = await fetch(`${BACKEND_URL}/api/logs?status=${activeFilter}`, {
             headers: { 'Authorization': `Bearer ${devToken}` }
         });
         
@@ -685,7 +689,7 @@ document.getElementById('btn-calibrate-now').addEventListener('click', async () 
     showToast('Starting TCN experience replay calibration...');
     
     try {
-        const response = await fetch('/api/dev/calibrate', {
+        const response = await fetch(`${BACKEND_URL}/api/dev/calibrate`, {
             method: 'POST',
             headers: { 'Authorization': `Bearer ${devToken}` }
         });
@@ -716,7 +720,7 @@ document.getElementById('btn-flash-logs').addEventListener('click', async () => 
     if (!confirmed) return;
     
     try {
-        const response = await fetch('/api/logs', {
+        const response = await fetch(`${BACKEND_URL}/api/logs`, {
             method: 'DELETE',
             headers: { 'Authorization': `Bearer ${devToken}` }
         });
