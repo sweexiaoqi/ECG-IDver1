@@ -407,8 +407,9 @@ def list_samples():
     files = [f.name for f in SAMPLES_DIR.iterdir() if f.is_file()]
     return sorted(files)
 
-# Serve static files directly on `/`
-app.mount("/static", StaticFiles(directory="static"), name="static")
+# Serve static assets on root-level paths to match Netlify's folder layout
+app.mount("/css", StaticFiles(directory="static/css"), name="css")
+app.mount("/js", StaticFiles(directory="static/js"), name="js")
 
 @app.get("/")
 def read_root():
