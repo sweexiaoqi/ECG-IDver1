@@ -1,6 +1,6 @@
 // Set this to your deployed Render backend URL when deploying the frontend separately to Netlify.
 // Example: const BACKEND_URL = "https://ecg-id-backend.onrender.com";
-const BACKEND_URL = "https://ecg-id-backend.onrender.com";
+const BACKEND_URL = "";
 
 // State Management
 let currentScreen = 'screen-main';
